@@ -68,6 +68,7 @@ import static android.view.View.GONE;
 
 /**
  * UGC小视频录制界面
+ * 录制界面
  */
 public class TCVideoRecordActivity extends Activity implements View.OnClickListener, BeautySettingPannel.IOnBeautyParamsChangeListener
         , TXRecordCommon.ITXVideoRecordListener, View.OnTouchListener, GestureDetector.OnGestureListener, ScaleGestureDetector.OnScaleGestureListener {
@@ -77,13 +78,19 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
     private boolean mRecording = false;
     private boolean mStartPreview = false;
     private boolean mFront = true;
-    private TXUGCRecord mTXCameraRecord;
+    /**
+     * 这玩意是用来录制的
+     */
+    private TXUGCRecord mTXCameraRecord; //这玩意是用来录制的API
     private TXRecordCommon.TXRecordResult mTXRecordResult;
     private long mDuration; // 视频总时长
 
     private BeautySettingPannel.BeautyParams mBeautyParams = new BeautySettingPannel.BeautyParams();
     private TXCloudVideoView mVideoView;
-    private ImageView mIvConfirm;
+    /**
+     * 开始录制按钮
+     */
+    private ImageView mIvConfirm; //录制/停止按钮
     private TextView mProgressTime;
     private Button mBtnRecordRotation;
     private CustomProgressDialog mCustomProgressDialog;
@@ -192,6 +199,9 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
             TXCLog.e(TAG, "intent is null");
             return;
         }
+        /**
+         * 录制时间为5-60s
+         */
         mMinDuration = intent.getIntExtra(TCConstants.RECORD_CONFIG_MIN_DURATION, 5 * 1000);
         mMaxDuration = intent.getIntExtra(TCConstants.RECORD_CONFIG_MAX_DURATION, 60 * 1000);
         mAspectRatio = intent.getIntExtra(TCConstants.RECORD_CONFIG_ASPECT_RATIO, TXRecordCommon.VIDEO_ASPECT_RATIO_9_16);
@@ -220,6 +230,9 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
                 ", mRecommendQuality = " + mRecommendQuality + ", mRecordResolution = " + mRecordResolution + ", mBiteRate = " + mBiteRate + ", mFps = " + mFps + ", mGop = " + mGop);
     }
 
+    /**
+     * 录制的相关设置
+     */
     private void startCameraPreview() {
         if (mStartPreview) return;
         mStartPreview = true;
@@ -386,6 +399,10 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
         mComposeRecordBtn = (ComposeRecordBtn) findViewById(R.id.compose_record_btn);
         mRadioGroup = (RadioGroup) findViewById(R.id.rg_record_speed);
         ((RadioButton) findViewById(R.id.rb_normal)).setChecked(true);
+
+        /**
+         * 录制速度
+         */
         mRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
@@ -405,6 +422,9 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
                     mRecordSpeed = TXRecordCommon.RECORD_SPEED_SLOWEST;
 
                 }
+                /**
+                 * 设置录制速度，录制速度越快，时间读条越慢
+                 */
                 mTXCameraRecord.setRecordSpeed(mRecordSpeed);
             }
         });
@@ -906,7 +926,7 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
         }
         if (mRecording) {
             if (mPause) {
-                if(mTXCameraRecord == null){
+                if (mTXCameraRecord == null) {
                     return;
                 }
                 if (mTXCameraRecord.getPartsManager().getPartsPathList().size() == 0) {
@@ -927,6 +947,9 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
         mLastClickTime = currentClickTime;
     }
 
+    /**
+     * 继续录制
+     */
     private void resumeRecord() {
         if (mTXCameraRecord == null) {
             return;
@@ -964,6 +987,9 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
         mEnableStop = false;
     }
 
+    /**
+     * 暂停录制
+     */
     private void pauseRecord() {
         mComposeRecordBtn.pauseRecord();
         mPause = true;
@@ -981,6 +1007,9 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
         mRadioGroup.setVisibility(View.VISIBLE);
     }
 
+    /**
+     * 停止录制
+     */
     private void stopRecord() {
         if (mTXCameraRecord != null) {
             mTXCameraRecord.stopBGM();
@@ -993,6 +1022,9 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
         mRadioGroup.setVisibility(View.VISIBLE);
     }
 
+    /**
+     * 开始录制
+     */
     private void startRecord() {
         // 在开始录制的时候，就不能再让activity旋转了，否则生成视频出错
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -1015,10 +1047,13 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
             mTXCameraRecord = TXUGCRecord.getInstance(this.getApplicationContext());
         }
 
-        String customVideoPath = getCustomVideoOutputPath();
-        String customCoverPath = customVideoPath.replace(".mp4", ".jpg");
-        String customPartFolder = getCustomVideoPartFolder();
+        String customVideoPath = getCustomVideoOutputPath(); //录制视频存放位置
+        String customCoverPath = customVideoPath.replace(".mp4", ".jpg"); //录制视频封面存放位置
+        String customPartFolder = getCustomVideoPartFolder(); //存放文件夹
 
+        /**
+         * 这里是真正的开始录制
+         */
         int result = mTXCameraRecord.startRecord(customVideoPath, customPartFolder, customCoverPath);
         if (result != TXRecordCommon.START_RECORD_OK) {
             if (result == TXRecordCommon.START_RECORD_ERR_NOT_INIT) {
@@ -1139,6 +1174,7 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
         finish();
     }
 
+    //录制的回调============================================================================================//
     @Override
     public void onRecordEvent(int event, Bundle param) {
         TXCLog.d(TAG, "onRecordEvent event id = " + event);
@@ -1174,26 +1210,6 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        /** attention to this below ,must add this**/
-//        UMShareAPI.get(this).onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {//是否选择，没选择就不会继续
-            if (requestCode == mAudioCtrl.REQUESTCODE) {
-                if (data == null) {
-                    TXCLog.e(TAG, "null data");
-                } else {
-                    Uri uri = data.getData();//得到uri，后面就是将uri转化成file的过程。
-                    if (mAudioCtrl != null) {
-                        mAudioCtrl.processActivityResult(uri);
-                    } else {
-                        TXCLog.e(TAG, "NULL Pointer! Get Music Failed");
-                    }
-                }
-            }
-        }
-    }
-
-    @Override
     public void onRecordComplete(TXRecordCommon.TXRecordResult result) {
         mCustomProgressDialog.dismiss();
 
@@ -1216,6 +1232,27 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
                 startEditVideo();
             } else {
                 startPreview();
+            }
+        }
+    }
+    //录制的回调============================================================================================//
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        /** attention to this below ,must add this**/
+//        UMShareAPI.get(this).onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {//是否选择，没选择就不会继续
+            if (requestCode == mAudioCtrl.REQUESTCODE) {
+                if (data == null) {
+                    TXCLog.e(TAG, "null data");
+                } else {
+                    Uri uri = data.getData();//得到uri，后面就是将uri转化成file的过程。
+                    if (mAudioCtrl != null) {
+                        mAudioCtrl.processActivityResult(uri);
+                    } else {
+                        TXCLog.e(TAG, "NULL Pointer! Get Music Failed");
+                    }
+                }
             }
         }
     }

@@ -32,6 +32,8 @@ import java.util.List;
 
 /**
  * UGC小视频设置界面.
+ * <p>
+ * 录制设置 界面
  */
 
 public class TCVideoSettingActivity extends Activity implements View.OnClickListener {
@@ -390,6 +392,9 @@ public class TCVideoSettingActivity extends Activity implements View.OnClickList
         }
     }
 
+    /**
+     * 跳转去录制界面
+     */
     private void startVideoRecordActivity() {
         Intent intent = new Intent(this, TCVideoRecordActivity.class);
         intent.putExtra(TCConstants.RECORD_CONFIG_MIN_DURATION, 5 * 1000);

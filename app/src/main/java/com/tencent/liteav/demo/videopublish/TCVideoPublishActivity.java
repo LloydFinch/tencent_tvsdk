@@ -38,6 +38,7 @@ import java.io.IOException;
 
 /**
  * Created by vinsonswang on 2018/3/26.
+ * 发布界面
  */
 
 public class TCVideoPublishActivity extends FragmentActivity implements View.OnClickListener, ITXVodPlayListener {
@@ -48,9 +49,15 @@ public class TCVideoPublishActivity extends FragmentActivity implements View.OnC
     private EditText mEtVideoTitle;
     private ImageView mIvCover;
     private Button mBtnPublish;
+    /**
+     * 这个玩意是预览播放器传入的
+     */
     private TXCloudVideoView mTXCloudVideoView;
     private VideoWorkProgressFragment mWorkLoadingProgress; // 进度
     private TXUGCPublish mTXugcPublish;
+    /**
+     * 又是一个播放器，预览播放器
+     */
     private TXVodPlayer mTXVodPlayer;
     private TXVodPlayConfig mTXPlayConfig = null;
     private String mTitleStr;
@@ -90,12 +97,18 @@ public class TCVideoPublishActivity extends FragmentActivity implements View.OnC
         mTXVodPlayer.setVodListener(this);
         mTXVodPlayer.setLoop(true);
 
+        /**
+         * 传入一个path就能播放
+         */
         mTXVodPlayer.startPlay(mVideoPath);
     }
 
     private void initData() {
         mVideoPath = getIntent().getStringExtra(TCConstants.VIDEO_EDITER_PATH);
         mCoverImagePath = "/sdcard/cover.jpg";
+        /**
+         * 获取缩略图封面
+         */
         final Bitmap coverBitmap = TXVideoInfoReader.getInstance().getSampleImage(0, mVideoPath);
         if (coverBitmap != null) {
             mIvCover.setImageBitmap(coverBitmap);
@@ -116,6 +129,9 @@ public class TCVideoPublishActivity extends FragmentActivity implements View.OnC
     }
 
     private void initListener() {
+        /**
+         * 获取发布信息的回调
+         */
         mPublishSiglistener = new PublishSigListener() {
             @Override
             public void onSuccess(String signatureStr) {
@@ -153,6 +169,9 @@ public class TCVideoPublishActivity extends FragmentActivity implements View.OnC
                 TXCLog.i(TAG, "reportVideoInfo, report video info success");
             }
         };
+        /**
+         * report videoInfo回调
+         */
         VideoDataMgr.getInstance().setReportVideoInfoListener(mReportVideoInfoListener);
     }
 
@@ -294,6 +313,9 @@ public class TCVideoPublishActivity extends FragmentActivity implements View.OnC
     protected void stopPlay(boolean clearLastFrame) {
         if (mTXVodPlayer != null) {
             mTXVodPlayer.setVodListener(null);
+            /**
+             * 预览播放的停止，是否清除最后一帧
+             */
             mTXVodPlayer.stopPlay(clearLastFrame);
         }
     }
@@ -328,6 +350,9 @@ public class TCVideoPublishActivity extends FragmentActivity implements View.OnC
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        /**
+         * 需要反注册掉这些玩意
+         */
         VideoDataMgr.getInstance().setReportVideoInfoListener(null);
         VideoDataMgr.getInstance().setPublishSigListener(null);
         if (mWorkLoadingProgress != null) {

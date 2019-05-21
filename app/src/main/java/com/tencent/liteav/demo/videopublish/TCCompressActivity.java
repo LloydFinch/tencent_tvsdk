@@ -25,10 +25,14 @@ import com.tencent.ugc.TXVideoInfoReader;
 
 /**
  * Created by vinsonswang on 2018/3/27.
+ * 压缩界面
  */
 
 public class TCCompressActivity extends FragmentActivity {
     private final String TAG = "TCCompressActivity";
+    /**
+     * 压缩使用这玩意
+     */
     private TXVideoEditer mTXVideoEditer;
     private LinearLayout llBack;
     private RadioGroup rgVideoResolution;
@@ -114,6 +118,9 @@ public class TCCompressActivity extends FragmentActivity {
                 });
             }
         };
+        /**
+         * 压缩回调
+         */
         mTXVideoEditer.setVideoGenerateListener(mTXVideoGenerateListener);
     }
 
@@ -130,19 +137,19 @@ public class TCCompressActivity extends FragmentActivity {
         rgVideoResolution.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if(checkedId == rbVideoNotCompress.getId()){
+                if (checkedId == rbVideoNotCompress.getId()) {
                     mVideoResolution = -1;
                     mEtCompressBitrate.setText("");
-                }else if(checkedId == rbVideoResolution360p.getId()){
+                } else if (checkedId == rbVideoResolution360p.getId()) {
                     mVideoResolution = TXVideoEditConstants.VIDEO_COMPRESSED_360P;
                     mEtCompressBitrate.setText("2400");
-                }else if(checkedId == rbVideoResolution480p.getId()){
+                } else if (checkedId == rbVideoResolution480p.getId()) {
                     mVideoResolution = TXVideoEditConstants.VIDEO_COMPRESSED_480P;
                     mEtCompressBitrate.setText("2400");
-                }else if(checkedId == rbVideoResolution540p.getId()){
+                } else if (checkedId == rbVideoResolution540p.getId()) {
                     mVideoResolution = TXVideoEditConstants.VIDEO_COMPRESSED_540P;
                     mEtCompressBitrate.setText("6500");
-                }else if(checkedId == rbVideoResolution720p.getId()){
+                } else if (checkedId == rbVideoResolution720p.getId()) {
                     mVideoResolution = TXVideoEditConstants.VIDEO_COMPRESSED_720P;
                     mEtCompressBitrate.setText("9600");
                 }
@@ -166,10 +173,13 @@ public class TCCompressActivity extends FragmentActivity {
         });
     }
 
+    /**
+     * 开始压缩，默认码率2400
+     */
     private void startCompressVideo() {
-        if(mVideoResolution == -1){
+        if (mVideoResolution == -1) {
             startPublishActivity(mInputPath);
-        }else{
+        } else {
             if (mWorkLoadingProgress == null) {
                 initWorkLoadingProgress();
             }
@@ -178,14 +188,14 @@ public class TCCompressActivity extends FragmentActivity {
             mWorkLoadingProgress.show(getSupportFragmentManager(), "progress_dialog");
 
             String inputBitrateStr = mEtCompressBitrate.getText().toString();
-            if(!TextUtils.isEmpty(inputBitrateStr)){
+            if (!TextUtils.isEmpty(inputBitrateStr)) {
                 mBiteRate = Integer.parseInt(inputBitrateStr);
-                if(mBiteRate == 0){
+                if (mBiteRate == 0) {
                     mBiteRate = 2400;
-                }else if(mBiteRate > 20000){
+                } else if (mBiteRate > 20000) {
                     mBiteRate = 20000;
                 }
-            }else{
+            } else {
                 // 如果没有设置码率，默认设置一个码率
                 mBiteRate = 2400;
             }
@@ -202,8 +212,11 @@ public class TCCompressActivity extends FragmentActivity {
         stopCompressVideo();
     }
 
-    private void stopCompressVideo(){
-        if(!mCompressing){
+    /**
+     * 停止压缩
+     */
+    private void stopCompressVideo() {
+        if (!mCompressing) {
             TXCLog.e(TAG, "stopCompressVideo, mCompressing is false, ignore");
             return;
         }
@@ -231,7 +244,7 @@ public class TCCompressActivity extends FragmentActivity {
         mWorkLoadingProgress.setProgress(0);
     }
 
-    private void startPublishActivity(String videoPath){
+    private void startPublishActivity(String videoPath) {
         Intent intent = new Intent(TCCompressActivity.this, TCVideoPublishActivity.class);
         intent.putExtra(TCConstants.VIDEO_EDITER_PATH, videoPath);
         startActivity(intent);

@@ -76,7 +76,9 @@ public class SuperPlayerActivity extends Activity implements View.OnClickListene
     private Button mBtnScan;
     private ImageButton mBtnLink;
     private SwipeRefreshLayout mSwipeRefreshLayout;
-    //超级播放器View
+    /**
+     * 超级播放器View
+     */
     private SuperPlayerView mSuperPlayerView;
     //播放列表
     private RecyclerView mVodPlayerListView;
@@ -299,6 +301,10 @@ public class SuperPlayerActivity extends Activity implements View.OnClickListene
         }
     }
 
+    /**
+     * 获取视频列表
+     * 必须使用这种格式的实体{@link SuperPlayerModel}
+     */
     private void updateLiveList() {
 //        if (mDefaultVideo) {
 //            ArrayList<SuperPlayerModel> superPlayerModels = mSuperVodListLoader.loadDefaultLiveList();
@@ -417,6 +423,9 @@ public class SuperPlayerActivity extends Activity implements View.OnClickListene
         if (superPlayerModel.appid > 0) {
             TXLiveBase.setAppID("" + superPlayerModel.appid);
         }
+        /**
+         * 调用这个函数来播放
+         */
         mSuperPlayerView.playWithMode(superPlayerModel);
     }
 
@@ -466,6 +475,9 @@ public class SuperPlayerActivity extends Activity implements View.OnClickListene
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        /**
+         * 做一些释放操作
+         */
         mSuperPlayerView.release();
         if (mSuperPlayerView.getPlayMode() != SuperPlayerConst.PLAYMODE_FLOAT) {
             mSuperPlayerView.resetPlayer();
@@ -504,7 +516,7 @@ public class SuperPlayerActivity extends Activity implements View.OnClickListene
             TXLiveBase.setAppID("" + superPlayerModel.appid);
         }
         /**
-         * 调用这个view传递一个数据就OK了
+         * 调用这个view传递一个数据就可以直接播放了
          */
         mSuperPlayerView.playWithMode(superPlayerModel);
     }
