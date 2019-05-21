@@ -16,6 +16,8 @@ import java.util.ArrayList;
 
 /**
  * Created by liyuejiao on 2018/7/3.
+ * <p>
+ * 超级播放器的列表适配器
  */
 
 public class TCVodPlayerListAdapter extends RecyclerView.Adapter<TCVodPlayerListAdapter.ViewHolder> {

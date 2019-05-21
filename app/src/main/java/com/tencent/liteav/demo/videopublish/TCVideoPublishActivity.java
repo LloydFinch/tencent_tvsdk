@@ -97,7 +97,7 @@ public class TCVideoPublishActivity extends FragmentActivity implements View.OnC
         mVideoPath = getIntent().getStringExtra(TCConstants.VIDEO_EDITER_PATH);
         mCoverImagePath = "/sdcard/cover.jpg";
         final Bitmap coverBitmap = TXVideoInfoReader.getInstance().getSampleImage(0, mVideoPath);
-        if(coverBitmap != null){
+        if (coverBitmap != null) {
             mIvCover.setImageBitmap(coverBitmap);
             new Thread(new Runnable() {
                 @Override
@@ -137,6 +137,9 @@ public class TCVideoPublishActivity extends FragmentActivity implements View.OnC
                 });
             }
         };
+        /**
+         * 1 注册发布回调
+         */
         VideoDataMgr.getInstance().setPublishSigListener(mPublishSiglistener);
 
         mReportVideoInfoListener = new ReportVideoInfoListener() {
@@ -177,6 +180,9 @@ public class TCVideoPublishActivity extends FragmentActivity implements View.OnC
         }
     }
 
+    /**
+     * 这里正式发布视频
+     */
     private void publishVideo() {
         stopPlay(false);
         if (mWorkLoadingProgress == null) {
@@ -184,20 +190,29 @@ public class TCVideoPublishActivity extends FragmentActivity implements View.OnC
         }
         mWorkLoadingProgress.setProgress(0);
         mWorkLoadingProgress.show(getSupportFragmentManager(), "progress_dialog");
+        /**
+         * 获取发布信息
+         */
         getPublishSig();
         isCancelPublish = false;
     }
 
     private void getPublishSig() {
+        /**
+         * 会回调1 注册的回调接口
+         */
         VideoDataMgr.getInstance().getPublishSig();
     }
 
+    /**
+     * 发布视频
+     */
     private void publish() {
         mTXugcPublish.setListener(new TXUGCPublishTypeDef.ITXVideoPublishListener() {
             @Override
             public void onPublishProgress(long uploadBytes, long totalBytes) {
                 TXLog.d(TAG, "onPublishProgress [" + uploadBytes + "/" + totalBytes + "]");
-                if(isCancelPublish){
+                if (isCancelPublish) {
                     return;
                 }
                 mWorkLoadingProgress.setProgress((int) ((uploadBytes * 100) / totalBytes));
@@ -210,7 +225,7 @@ public class TCVideoPublishActivity extends FragmentActivity implements View.OnC
                     mWorkLoadingProgress.dismiss();
                 }
 
-                if(isCancelPublish){
+                if (isCancelPublish) {
                     return;
                 }
 
@@ -243,10 +258,13 @@ public class TCVideoPublishActivity extends FragmentActivity implements View.OnC
         param.videoPath = mVideoPath;
         param.coverPath = mCoverImagePath;
         mTitleStr = mEtVideoTitle.getText().toString();
-        if(TextUtils.isEmpty(mTitleStr)){
+        if (TextUtils.isEmpty(mTitleStr)) {
             mTitleStr = "测试";
         }
         param.fileName = mTitleStr;
+        /**
+         * 这里才是真正的发布
+         */
         mTXugcPublish.publishVideo(param);
     }
 

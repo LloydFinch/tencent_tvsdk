@@ -36,14 +36,14 @@ public class VideoDataMgr {
     private ReportVideoInfoListener mReportVideoInfoListener;
     private ArrayList<SuperPlayerModel> mDefaultList;
 
-    public static VideoDataMgr getInstance(){
-        if(instance == null){
-                    instance = new VideoDataMgr();
-                }
+    public static VideoDataMgr getInstance() {
+        if (instance == null) {
+            instance = new VideoDataMgr();
+        }
         return instance;
     }
 
-    private VideoDataMgr(){
+    private VideoDataMgr() {
         okHttpClient = new OkHttpClient().newBuilder()
                 .connectTimeout(5, TimeUnit.SECONDS)    // 设置超时时间
                 .readTimeout(5, TimeUnit.SECONDS)       // 设置读取超时时间
@@ -51,10 +51,13 @@ public class VideoDataMgr {
                 .build();
     }
 
-    public void setPublishSigListener(PublishSigListener listener){
+    public void setPublishSigListener(PublishSigListener listener) {
         mPublishSigListener = listener;
     }
 
+    /**
+     * 获取发布信息
+     */
     public void getPublishSig() {
         String sigParams = getSigParams();
         Request request = new Request.Builder()
@@ -72,13 +75,16 @@ public class VideoDataMgr {
                 // response.body().string()调用后，会把流关闭，因此只能调用一次
                 String contentStr = response.body().string();
                 TXCLog.i(TAG, "getPublishSig onResponse : " + contentStr);
+                /**
+                 * 发布成功
+                 */
                 parseSigRes(contentStr);
             }
         });
     }
 
     private void parseSigRes(String sigRes) {
-        if(TextUtils.isEmpty(sigRes)){
+        if (TextUtils.isEmpty(sigRes)) {
             notifyGetPublishSigFail(Const.RetCode.CODE_PARSE_ERR);
             TXCLog.e(TAG, "parseSigRes err, sigRes is empty!");
             return;
@@ -86,18 +92,21 @@ public class VideoDataMgr {
         try {
             JSONObject resJson = new JSONObject(sigRes);
             int code = resJson.optInt("code");
-            if(code != Const.RetCode.CODE_SUCCESS){
+            if (code != Const.RetCode.CODE_SUCCESS) {
                 TXCLog.e(TAG, "parseSigRes fail, code = " + code);
                 notifyGetPublishSigFail(code);
                 return;
             }
             JSONObject dataObj = resJson.getJSONObject("data");
             String signature = dataObj.optString("signature");
-            if(TextUtils.isEmpty(signature)){
+            if (TextUtils.isEmpty(signature)) {
                 TXCLog.e(TAG, "parseSigRes, after parse signature is empty!");
                 notifyGetPublishSigFail(Const.RetCode.CODE_PARSE_ERR);
                 return;
             }
+            /**
+             * 通知回调
+             */
             notifyGetPublishSigSuccess(signature);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -105,23 +114,26 @@ public class VideoDataMgr {
         }
     }
 
-    private void notifyGetPublishSigFail(int errCode){
-        if(mPublishSigListener != null){
+    private void notifyGetPublishSigFail(int errCode) {
+        if (mPublishSigListener != null) {
             mPublishSigListener.onFail(errCode);
         }
     }
 
-    private void notifyGetPublishSigSuccess(String signatureStr){
-        if(mPublishSigListener != null){
+    private void notifyGetPublishSigSuccess(String signatureStr) {
+        if (mPublishSigListener != null) {
+            /**
+             * 直接回调成功
+             */
             mPublishSigListener.onSuccess(signatureStr);
         }
     }
 
-    public void setReportVideoInfoListener(ReportVideoInfoListener reportVideoInfoListener){
+    public void setReportVideoInfoListener(ReportVideoInfoListener reportVideoInfoListener) {
         mReportVideoInfoListener = reportVideoInfoListener;
     }
 
-    public void reportVideoInfo(String fileId, String authorName){
+    public void reportVideoInfo(String fileId, String authorName) {
         Request request = new Request.Builder()
                 .url(Const.ADDRESS_VIDEO_REPORT + fileId + "?" + getSigParams())
                 .get()
@@ -143,7 +155,7 @@ public class VideoDataMgr {
     }
 
     private void parseReportVideoResult(String contentStr) {
-        if(TextUtils.isEmpty(contentStr)){
+        if (TextUtils.isEmpty(contentStr)) {
             TXCLog.e(TAG, "parseReportVideoResult err, contentStr is empty!");
             notifyReportVideoInfoFail(Const.RetCode.CODE_PARSE_ERR);
             return;
@@ -152,7 +164,7 @@ public class VideoDataMgr {
         try {
             resJson = new JSONObject(contentStr);
             int code = resJson.optInt("code");
-            if(code != Const.RetCode.CODE_SUCCESS){
+            if (code != Const.RetCode.CODE_SUCCESS) {
                 TXCLog.e(TAG, "parseReportVideoResult fail, code = " + code);
                 notifyGetPublishSigFail(code);
                 return;
@@ -164,18 +176,18 @@ public class VideoDataMgr {
     }
 
     private void notifyReportVideoInfoFail(int codeRequestErr) {
-        if(mReportVideoInfoListener != null){
+        if (mReportVideoInfoListener != null) {
             mReportVideoInfoListener.onFail(codeRequestErr);
         }
     }
 
-    private void notifyReportVideoInfoSuc(){
-        if(mReportVideoInfoListener != null){
+    private void notifyReportVideoInfoSuc() {
+        if (mReportVideoInfoListener != null) {
             mReportVideoInfoListener.onSuccess();
         }
     }
 
-    public void setGetVideoInfoListListener(GetVideoInfoListListener getVideoInfoListListener){
+    public void setGetVideoInfoListListener(GetVideoInfoListListener getVideoInfoListListener) {
         mGetVideoInfoListListener = getVideoInfoListListener;
     }
 
@@ -200,7 +212,7 @@ public class VideoDataMgr {
     }
 
     private void parseVideoList(String contentStr) {
-        if(TextUtils.isEmpty(contentStr)){
+        if (TextUtils.isEmpty(contentStr)) {
 
             TXCLog.e(TAG, "parseVideoList err, contentStr is empty");
             return;
@@ -208,7 +220,7 @@ public class VideoDataMgr {
         try {
             JSONObject resObject = new JSONObject(contentStr);
             int code = resObject.optInt("code");
-            if(code != Const.RetCode.CODE_SUCCESS){
+            if (code != Const.RetCode.CODE_SUCCESS) {
                 TXCLog.e(TAG, "parseVideoList fail, code = " + code);
                 notifyGetVideoListFail(code);
                 return;
@@ -216,7 +228,7 @@ public class VideoDataMgr {
             JSONObject dataObj = resObject.getJSONObject("data");
             JSONArray list = dataObj.getJSONArray("list");
             List<VideoInfo> videoInfoList = new ArrayList<>();
-            for(int i = 0; i < list.length(); i++){
+            for (int i = 0; i < list.length(); i++) {
                 JSONObject videoInfoJSONObject = list.getJSONObject(i);
                 VideoInfo videoInfo = new VideoInfo();
                 videoInfo.fileId = videoInfoJSONObject.optString("fileId");
@@ -233,14 +245,14 @@ public class VideoDataMgr {
         }
     }
 
-    private void notifyGetVideoListFail(int errCode){
-        if(mGetVideoInfoListListener != null){
+    private void notifyGetVideoListFail(int errCode) {
+        if (mGetVideoInfoListListener != null) {
             mGetVideoInfoListListener.onFail(errCode);
         }
     }
 
-    private void notifyGetVideoListSuccess(List<VideoInfo> videoInfoList){
-        if(mGetVideoInfoListListener != null){
+    private void notifyGetVideoListSuccess(List<VideoInfo> videoInfoList) {
+        if (mGetVideoInfoListListener != null) {
             mGetVideoInfoListListener.onGetVideoInfoList(videoInfoList);
         }
     }
@@ -269,7 +281,7 @@ public class VideoDataMgr {
      * @return
      */
     private String getSigParams() {
-        long timeStamp = System.currentTimeMillis()/1000;
+        long timeStamp = System.currentTimeMillis() / 1000;
         String nonce = "";
         String sig = "";
         try {

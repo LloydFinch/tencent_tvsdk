@@ -67,7 +67,7 @@ public class SuperPlayerActivity extends Activity implements View.OnClickListene
 
     private static final String TAG = "SuperPlayerActivity";
     private static final int LIST_TYPE_LIVE = 0;
-    private static final int LIST_TYPE_VOD  = 1;
+    private static final int LIST_TYPE_VOD = 1;
 
     private Context mContext;
     //标题
@@ -101,9 +101,9 @@ public class SuperPlayerActivity extends Activity implements View.OnClickListene
     private int mVideoCount;
     private boolean mVideoHasPlay;
 
-    private View mTitleMask,mListMask;
-    private RelativeLayout mRlMaskOne,mRlMaskTwo;
-    private TextView mTvBtnOne,mTvBtnTwo;
+    private View mTitleMask, mListMask;
+    private RelativeLayout mRlMaskOne, mRlMaskTwo;
+    private TextView mTvBtnOne, mTvBtnTwo;
 
 
     private static class ListTabItem {
@@ -113,6 +113,7 @@ public class SuperPlayerActivity extends Activity implements View.OnClickListene
             this.imageView = imageView;
             this.textView.setOnClickListener(listener);
         }
+
         public int type;
         public TextView textView;
         public ImageView imageView;
@@ -128,7 +129,7 @@ public class SuperPlayerActivity extends Activity implements View.OnClickListene
         initView();
         initData();
 
-        mDataType = mDefaultVideo?LIST_TYPE_LIVE:LIST_TYPE_VOD;
+        mDataType = mDefaultVideo ? LIST_TYPE_LIVE : LIST_TYPE_VOD;
         updateList(mDataType);
     }
 
@@ -244,7 +245,7 @@ public class SuperPlayerActivity extends Activity implements View.OnClickListene
     }
 
     private void initMaskLayout() {
-        mTitleMask  = findViewById(R.id.super_view_title_mask);
+        mTitleMask = findViewById(R.id.super_view_title_mask);
         mTitleMask.setOnClickListener(new View.OnClickListener() {// 拦截所有事件
             @Override
             public void onClick(View v) {
@@ -269,7 +270,6 @@ public class SuperPlayerActivity extends Activity implements View.OnClickListene
             mListMask.setVisibility(GONE);
         }
     }
-
 
 
     private void initData() {
@@ -317,14 +317,14 @@ public class SuperPlayerActivity extends Activity implements View.OnClickListene
                     public void run() {
                         if (mDataType != LIST_TYPE_LIVE) return;
                         mVodPlayerListAdapter.clear();
-                        for (SuperPlayerModel superPlayerModel:
+                        for (SuperPlayerModel superPlayerModel :
                                 superPlayerModelList) {
                             mVodPlayerListAdapter.addSuperPlayerModel(superPlayerModel);
                             mLiveList.add(superPlayerModel);
                         }
                         if (!mVideoHasPlay && !mLiveList.isEmpty()) {
                             if (mLiveList.get(0).appid > 0) {
-                                TXLiveBase.setAppID(""+mLiveList.get(0).appid);
+                                TXLiveBase.setAppID("" + mLiveList.get(0).appid);
                             }
                             mSuperPlayerView.playWithMode(mLiveList.get(0));
                             mVideoHasPlay = true;
@@ -338,7 +338,7 @@ public class SuperPlayerActivity extends Activity implements View.OnClickListene
 
             @Override
             public void onFail(int errCode) {
-                TXCLog.e(TAG,"updateLiveList error");
+                TXCLog.e(TAG, "updateLiveList error");
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -408,13 +408,14 @@ public class SuperPlayerActivity extends Activity implements View.OnClickListene
             mIvAdd.setVisibility(GONE);
         }
     }
+
     private void playDefaultVideo(int appid, String fileid) {
         SuperPlayerModel superPlayerModel = new SuperPlayerModel();
         superPlayerModel.appid = appid;
         superPlayerModel.fileid = fileid;
         superPlayerModel.title = "小视频-特效剪辑";
         if (superPlayerModel.appid > 0) {
-            TXLiveBase.setAppID(""+superPlayerModel.appid);
+            TXLiveBase.setAppID("" + superPlayerModel.appid);
         }
         mSuperPlayerView.playWithMode(superPlayerModel);
     }
@@ -500,8 +501,11 @@ public class SuperPlayerActivity extends Activity implements View.OnClickListene
     @Override
     public void onItemClick(int position, SuperPlayerModel superPlayerModel) {
         if (superPlayerModel.appid > 0) {
-            TXLiveBase.setAppID(""+superPlayerModel.appid);
+            TXLiveBase.setAppID("" + superPlayerModel.appid);
         }
+        /**
+         * 调用这个view传递一个数据就OK了
+         */
         mSuperPlayerView.playWithMode(superPlayerModel);
     }
 
@@ -555,7 +559,7 @@ public class SuperPlayerActivity extends Activity implements View.OnClickListene
                 if (mLiveList.isEmpty()) {
                     updateLiveList();
                 } else {
-                    for (SuperPlayerModel superPlayerModel:
+                    for (SuperPlayerModel superPlayerModel :
                             mLiveList) {
                         mVodPlayerListAdapter.addSuperPlayerModel(superPlayerModel);
                     }
@@ -565,7 +569,7 @@ public class SuperPlayerActivity extends Activity implements View.OnClickListene
                 if (mVodList.isEmpty()) {
                     updateVodList();
                 } else {
-                    for (SuperPlayerModel superPlayerModel:
+                    for (SuperPlayerModel superPlayerModel :
                             mVodList) {
                         mVodPlayerListAdapter.addSuperPlayerModel(superPlayerModel);
                     }
@@ -575,6 +579,7 @@ public class SuperPlayerActivity extends Activity implements View.OnClickListene
 
         mVodPlayerListAdapter.notifyDataSetChanged();
     }
+
     /**
      * 悬浮窗播放
      */
@@ -629,7 +634,7 @@ public class SuperPlayerActivity extends Activity implements View.OnClickListene
     private void playNewVideo(String result) {
         mVideoCount++;
         SuperPlayerModel superPlayerModel = new SuperPlayerModel();
-        superPlayerModel.title = "测试视频"+mVideoCount;
+        superPlayerModel.title = "测试视频" + mVideoCount;
         superPlayerModel.videoURL = result;
         superPlayerModel.placeholderImage = "http://xiaozhibo-10055601.file.myqcloud.com/coverImg.jpg";
         superPlayerModel.appid = DEFAULT_APPID;
@@ -637,9 +642,9 @@ public class SuperPlayerActivity extends Activity implements View.OnClickListene
             superPlayerModel.appid = 1253131631;
             TXLiveBase.setAppID("1253131631");
             superPlayerModel.multiVideoURLs = new ArrayList<>(3);
-            superPlayerModel.multiVideoURLs.add(new SuperPlayerUrl("超清",superPlayerModel.videoURL));
-            superPlayerModel.multiVideoURLs.add(new SuperPlayerUrl("高清",superPlayerModel.videoURL.replace(".flv","_900.flv")));
-            superPlayerModel.multiVideoURLs.add(new SuperPlayerUrl("标清",superPlayerModel.videoURL.replace(".flv","_550.flv")));
+            superPlayerModel.multiVideoURLs.add(new SuperPlayerUrl("超清", superPlayerModel.videoURL));
+            superPlayerModel.multiVideoURLs.add(new SuperPlayerUrl("高清", superPlayerModel.videoURL.replace(".flv", "_900.flv")));
+            superPlayerModel.multiVideoURLs.add(new SuperPlayerUrl("标清", superPlayerModel.videoURL.replace(".flv", "_550.flv")));
         }
         if (!TextUtils.isEmpty(superPlayerModel.videoURL) && superPlayerModel.videoURL.contains("3891.liveplay.myqcloud.com")) {
             superPlayerModel.appid = 1252463788;
