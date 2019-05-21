@@ -1,0 +1,8 @@
+<resources>
+    <!-- UGC*******************************************************************************************************************************-->
+    <dimen name="ugc_aspect_width">44dp</dimen>
+    <dimen name="ugc_aspect_divider">18dp</dimen>
+    <dimen name="ugc_progress_cursor">2dp</dimen>
+    <dimen name="ugc_progress_min_pos">2dp</dimen>
+    <dimen name="ugc_progress_divider">1dp</dimen>
+</resources>

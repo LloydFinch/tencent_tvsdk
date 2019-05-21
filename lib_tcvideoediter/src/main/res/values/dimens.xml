@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 视频进度条 -->
+    <dimen name="video_progress_height">50dp</dimen>
+    <dimen name="video_thumbnail_width">50dp</dimen>
+    <dimen name="repeat_slider_width">26dp</dimen>
+
+    <dimen name="ugc_item_thumb_height">65dp</dimen>
+</resources>
