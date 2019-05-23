@@ -68,12 +68,15 @@ public class TCConstants {
     public static final String UGC_LICENCE_NAME = "TXUgcSDK.licence";
 
     // 点播的信息
-    public static final int VOD_APPID = 1256468886;
-    public static final String VOD_APPKEY = "1973fcc2b70445af8b51053d4f9022bb";
+    /**
+     * id和key
+     */
+    public static final int VOD_APPID = 1256468886; //appId
+    public static final String VOD_APPKEY = "1973fcc2b70445af8b51053d4f9022bb"; //appkey
 
     //
     public static final int REQUEST_CODE_PASTER = 1;
-    public static final int REQUEST_CODE_WORD   = 2;
+    public static final int REQUEST_CODE_WORD = 2;
 
     //ELK上报事件
     public static final String ELK_ACTION_CHANGE_RESOLUTION = "change_resolution";

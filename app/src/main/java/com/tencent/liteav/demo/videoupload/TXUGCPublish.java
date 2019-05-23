@@ -95,6 +95,7 @@ public class TXUGCPublish {
         }
 
         TVCUploadInfo info = new TVCUploadInfo(getFileType(param.videoPath), param.videoPath, getFileType(coverPath), coverPath, param.fileName);
+        //这里:上传视频
         int ret = mTVCClient.uploadVideo(info, new TVCUploadListener() {
             @Override
             public void onSucess(final String fileId, final String playUrl, final String coverUrl) {
@@ -109,6 +110,7 @@ public class TXUGCPublish {
                                 result.videoId = fileId;
                                 result.videoURL = playUrl;
                                 result.coverURL = coverUrl;
+                                //成功直接触发回调
                                 mListener.onPublishComplete(result);
                             }
                         }
@@ -176,13 +178,14 @@ public class TXUGCPublish {
      */
     public void canclePublish() {
         if (mTVCClient != null) {
-             mTVCClient.cancleUpload();
+            mTVCClient.cancleUpload();
         }
         mPublishing = false;
     }
 
     /**
      * 获取上报信息
+     *
      * @return
      */
     public Intent getStatusInfo() {

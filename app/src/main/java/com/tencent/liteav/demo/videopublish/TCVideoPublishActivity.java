@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -18,6 +19,7 @@ import com.tencent.liteav.demo.R;
 import com.tencent.liteav.demo.common.view.VideoWorkProgressFragment;
 import com.tencent.liteav.demo.common.utils.TCConstants;
 import com.tencent.liteav.demo.play.superplayer.SuperPlayerActivity;
+import com.tencent.liteav.demo.videopublish.server.Const;
 import com.tencent.liteav.demo.videopublish.server.PublishSigListener;
 import com.tencent.liteav.demo.videopublish.server.ReportVideoInfoListener;
 import com.tencent.liteav.demo.videopublish.server.VideoDataMgr;
@@ -136,6 +138,7 @@ public class TCVideoPublishActivity extends FragmentActivity implements View.OnC
             @Override
             public void onSuccess(String signatureStr) {
                 signature = signatureStr;
+                Log.e(Const.LLOYDFINCH, "签名信息为: " + signatureStr);
                 publish();
             }
 
@@ -227,6 +230,9 @@ public class TCVideoPublishActivity extends FragmentActivity implements View.OnC
      * 发布视频
      */
     private void publish() {
+        /**
+         * 设置了回调,最终进入onPublishComplete()来
+         */
         mTXugcPublish.setListener(new TXUGCPublishTypeDef.ITXVideoPublishListener() {
             @Override
             public void onPublishProgress(long uploadBytes, long totalBytes) {
@@ -248,7 +254,11 @@ public class TCVideoPublishActivity extends FragmentActivity implements View.OnC
                     return;
                 }
 
-                // 这里可以把上传返回的视频信息以及自定义的视频信息上报到自己的业务服务器
+
+                Log.e(Const.LLOYDFINCH, "发布成功，上报服务器:" + result);
+                /**
+                 * 发布成功上报服务器
+                 */
                 reportVideoInfo(result);
 
                 // 注意：如果取消发送时，是取消的剩余未上传的分片发送，如果视频比较小，分片已经进入任务队列了是无法取消的。此时不跳转到下一个界面。
@@ -258,7 +268,7 @@ public class TCVideoPublishActivity extends FragmentActivity implements View.OnC
                     intent.putExtra(TCConstants.PLAYER_DEFAULT_VIDEO, false);
                     intent.putExtra(TCConstants.PLAYER_VIDEO_ID, result.videoId);
                     intent.putExtra(TCConstants.PLAYER_VIDEO_NAME, mTitleStr);
-                    startActivity(intent);
+                    startActivity(intent); //发布成功，进行跳转
 
                 } else {
                     if (result.descMsg.contains("java.net.UnknownHostException") || result.descMsg.contains("java.net.ConnectException")) {
@@ -273,16 +283,16 @@ public class TCVideoPublishActivity extends FragmentActivity implements View.OnC
 
         TXUGCPublishTypeDef.TXPublishParam param = new TXUGCPublishTypeDef.TXPublishParam();
         // signature计算规则可参考 https://www.qcloud.com/document/product/266/9221
-        param.signature = signature;
-        param.videoPath = mVideoPath;
-        param.coverPath = mCoverImagePath;
-        mTitleStr = mEtVideoTitle.getText().toString();
+        param.signature = signature; //第一步获取到的签名信息
+        param.videoPath = mVideoPath; //视频路径
+        param.coverPath = mCoverImagePath; //封面地址
+        mTitleStr = mEtVideoTitle.getText().toString(); //视频标题
         if (TextUtils.isEmpty(mTitleStr)) {
             mTitleStr = "测试";
         }
         param.fileName = mTitleStr;
         /**
-         * 这里才是真正的发布
+         * 这里才是真正的发布 TODO 发布入口
          */
         mTXugcPublish.publishVideo(param);
     }

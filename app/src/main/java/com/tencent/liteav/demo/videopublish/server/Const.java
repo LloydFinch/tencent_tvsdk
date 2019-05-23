@@ -24,4 +24,7 @@ public class Const {
         public static final int CODE_PARSE_ERR = 2;            // 解析json错误
 
     }
+
+
+    public static final String LLOYDFINCH = "LLOYDFINCH";
 }

@@ -1,6 +1,7 @@
 package com.tencent.liteav.demo.videopublish.server;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.tencent.liteav.basic.log.TXCLog;
 import com.tencent.liteav.demo.common.utils.TCConstants;
@@ -56,7 +57,7 @@ public class VideoDataMgr {
     }
 
     /**
-     * 获取发布信息
+     * 获取签名信息
      */
     public void getPublishSig() {
         String sigParams = getSigParams();
@@ -75,8 +76,13 @@ public class VideoDataMgr {
                 // response.body().string()调用后，会把流关闭，因此只能调用一次
                 String contentStr = response.body().string();
                 TXCLog.i(TAG, "getPublishSig onResponse : " + contentStr);
+                Log.e(TAG, "getPublishSig onResponse : " + contentStr);
+
+
+                Log.e(Const.LLOYDFINCH, "获取签名信息成功: " + contentStr);
+
                 /**
-                 * 发布成功
+                 * 解析签名信息
                  */
                 parseSigRes(contentStr);
             }
@@ -286,6 +292,9 @@ public class VideoDataMgr {
         String sig = "";
         try {
             nonce = TCUtils.getMD5Encryption(String.valueOf(System.currentTimeMillis()));
+            /**
+             * 使用id和key加密后发送给服务器获取签名信息
+             */
             sig = TCUtils.getMD5Encryption(TCConstants.VOD_APPID + String.valueOf(timeStamp) + nonce + TCConstants.VOD_APPKEY);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
