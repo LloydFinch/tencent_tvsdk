@@ -143,7 +143,7 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
     private int mBGMDuration;
     private ImageView mIvMusicMask;
     private RadioGroup mRadioGroup;
-    private int mRecordSpeed = TXRecordCommon.RECORD_SPEED_NORMAL;
+    private int mRecordSpeed = TXRecordCommon.RECORD_SPEED_NORMAL; //录制速度
     private boolean mNeedEditer;
     private boolean mPortrait = true;
     private Button mSnapShot;

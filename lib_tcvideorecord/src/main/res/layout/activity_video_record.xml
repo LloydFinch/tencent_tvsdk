@@ -58,8 +58,8 @@
             android:id="@+id/progress_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
             android:layout_below="@id/record_progress_view"
+            android:layout_alignParentRight="true"
             android:layout_marginRight="14dp"
             android:text="00:00"
             android:textColor="#fff" />
@@ -68,8 +68,8 @@
             android:id="@+id/btn_orientation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
             android:layout_below="@id/progress_time"
+            android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_marginLeft="30dp"
             android:background="@color/transparent"
@@ -247,8 +247,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:layout_marginRight="14dp"
         android:layout_marginTop="30dp"
+        android:layout_marginRight="14dp"
         android:orientation="vertical">
 
         <ImageView
@@ -312,8 +312,8 @@
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
         android:layout_below="@id/layout_aspect"
+        android:layout_alignParentRight="true"
         android:layout_marginRight="14dp">
 
         <LinearLayout
@@ -396,5 +396,5 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="60dp"
         android:text="截图"
-        android:visibility="gone" />
+        android:visibility="visible" />
 </RelativeLayout>
