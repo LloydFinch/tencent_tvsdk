@@ -14,6 +14,9 @@ public class TCVideoEditerMgr {
 
     private static final String TAG = "TCVideoEditerMgr";
 
+    /**
+     * 获取所有的视频列表
+     */
     public static ArrayList<TCVideoFileInfo> getAllVideo(Context context) {
         ArrayList<TCVideoFileInfo> videos = new ArrayList<TCVideoFileInfo>();
         String[] mediaColumns = new String[]{
@@ -62,8 +65,11 @@ public class TCVideoEditerMgr {
         return videos;
     }
 
+    /**
+     * 获取所有的图片列表
+     */
     public static ArrayList<TCVideoFileInfo> getAllPictrue(Context context) {
-        ArrayList<TCVideoFileInfo> pictureList = new ArrayList<TCVideoFileInfo>();
+        ArrayList<TCVideoFileInfo> pictureList = new ArrayList<>();
         String[] mediaColumns = new String[]{
                 MediaStore.Images.Media.DISPLAY_NAME,
                 MediaStore.Images.Media.DATA,
@@ -72,21 +78,21 @@ public class TCVideoEditerMgr {
         ContentResolver contentResolver = context.getApplicationContext().getContentResolver();
 
         Cursor cursor = contentResolver.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, mediaColumns, null, null, null);
-        while (cursor.moveToNext()){
-            String path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA));
-            File file = new File(path);
-            boolean canRead = file.canRead();
-            long length = file.length();
-            if (!canRead || length == 0) {
-                continue;
-            }
-            TCVideoFileInfo fileItem = new TCVideoFileInfo();
-            fileItem.setFilePath(path);
-            fileItem.setFileName(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DISPLAY_NAME)));
-            fileItem.setFileType(TCVideoFileInfo.FILE_TYPE_PICTURE);
-            pictureList.add(fileItem);
-        }
         if (cursor != null) {
+            while (cursor.moveToNext()) {
+                String path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA));
+                File file = new File(path);
+                boolean canRead = file.canRead();
+                long length = file.length();
+                if (!canRead || length == 0) {
+                    continue;
+                }
+                TCVideoFileInfo fileItem = new TCVideoFileInfo();
+                fileItem.setFilePath(path);
+                fileItem.setFileName(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DISPLAY_NAME)));
+                fileItem.setFileType(TCVideoFileInfo.FILE_TYPE_PICTURE);
+                pictureList.add(fileItem);
+            }
             cursor.close();
         }
         return pictureList;

@@ -207,6 +207,7 @@ public class TCVideoPreviewActivity extends Activity implements View.OnClickList
                 downloadRecord();
                 break;
             case R.id.record_preview:
+                //预览
                 if (mVideoPlay) {
                     if (mVideoPause) {
                         mTXVodPlayer.resume();
@@ -233,6 +234,9 @@ public class TCVideoPreviewActivity extends Activity implements View.OnClickList
 
     }
 
+    /**
+     * 跳转到编辑视频
+     */
     private void startEditVideo() {
         // 播放器版本没有此activity
         Intent intent = new Intent();
@@ -245,24 +249,36 @@ public class TCVideoPreviewActivity extends Activity implements View.OnClickList
         finish();
     }
 
+    /**
+     * 发布视频
+     */
     private void publish() {
         stopPlay(false);
+        //TODO 这里获取customID
         TXUGCPublish txugcPublish = new TXUGCPublish(this.getApplicationContext(), "customID");
         txugcPublish.setListener(new TXUGCPublishTypeDef.ITXVideoPublishListener() {
             @Override
             public void onPublishProgress(long uploadBytes, long totalBytes) {
+                //发布过程
                 TXLog.d(TAG, "onPublishProgress [" + uploadBytes + "/" + totalBytes + "]");
             }
 
             @Override
             public void onPublishComplete(TXUGCPublishTypeDef.TXPublishResult result) {
-                TXLog.d(TAG, "onPublishComplete [" + result.retCode + "/" + (result.retCode == 0 ? result.videoURL : result.descMsg) + "]");
+                //发布结束
+                if (result != null) {
+                    String videoUrl = result.videoURL;
+                    String coverUrl = result.coverURL;
+                    //TODO 这里获取到视频路径和封面路径
+                    TXLog.d(TAG, "onPublishComplete [" + result.retCode + "/" + (result.retCode == 0 ? result.videoURL : result.descMsg) + "]");
+                }
 
             }
         });
 
         TXUGCPublishTypeDef.TXPublishParam param = new TXUGCPublishTypeDef.TXPublishParam();
         // signature计算规则可参考 https://www.qcloud.com/document/product/266/9221
+        //TODO 这里需要拿到签名信息
         param.signature = "";
         param.videoPath = mVideoPath;
         param.coverPath = mCoverImagePath;
@@ -270,6 +286,9 @@ public class TCVideoPreviewActivity extends Activity implements View.OnClickList
         finish();
     }
 
+    /**
+     * 预览播放
+     */
     private boolean startPlay() {
         mStartPreview.setBackgroundResource(R.drawable.icon_record_pause);
         mTXVodPlayer.setPlayerView(mTXCloudVideoView);
@@ -281,6 +300,7 @@ public class TCVideoPreviewActivity extends Activity implements View.OnClickList
 
         mTXVodPlayer.setConfig(mTXPlayConfig);
 
+        //开始播放
         int result = mTXVodPlayer.startPlay(mVideoPath); // result返回值：0 success;  -1 empty url; -2 invalid url; -3 invalid playType;
         if (result != 0) {
             mStartPreview.setBackgroundResource(R.drawable.icon_record_start);
@@ -304,6 +324,9 @@ public class TCVideoPreviewActivity extends Activity implements View.OnClickList
         return values;
     }
 
+    /**
+     * 下载视频，直接保存即可
+     */
     private void downloadRecord() {
         File file = new File(mVideoPath);
         if (file.exists()) {
@@ -323,7 +346,9 @@ public class TCVideoPreviewActivity extends Activity implements View.OnClickList
                 this.getContentResolver().insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
 
                 insertVideoThumb(newFile.getPath(), mCoverImagePath);
+                Log.e(TAG, "download success");
             } catch (Exception e) {
+                Log.e(TAG, "download fail, error is: " + e.getMessage());
                 e.printStackTrace();
             }
             finish();
@@ -372,6 +397,9 @@ public class TCVideoPreviewActivity extends Activity implements View.OnClickList
         }
     }
 
+    /**
+     * 删除视频
+     */
     private void deleteVideo() {
         stopPlay(true);
         //删除文件

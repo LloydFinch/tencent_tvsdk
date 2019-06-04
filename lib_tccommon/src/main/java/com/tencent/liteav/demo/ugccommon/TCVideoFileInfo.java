@@ -35,7 +35,7 @@ public class TCVideoFileInfo implements Serializable {
     }
 
     public String getFilePath() {
-         return this.filePath;
+        return this.filePath;
     }
 
     public void setFilePath(String filePath) {

@@ -1,23 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:id="@+id/rl_play_root"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                tools:ignore="contentDescription">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rl_play_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:ignore="contentDescription">
 
+    <!--预览视频&展示日志-->
     <com.tencent.liteav.demo.common.activity.videopreview.TCVideoView
         android:id="@+id/video_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerInParent="true"
-        android:visibility="visible"/>
+        android:visibility="visible" />
 
     <ImageView
         android:id="@+id/cover"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_centerInParent="true"/>
+        android:layout_centerInParent="true" />
 
     <ImageView
         android:id="@+id/record_preview"
@@ -25,7 +26,7 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:background="@drawable/icon_record_start"
-        android:onClick="onClick"/>
+        android:onClick="onClick" />
 
 
     <!--录制完成-->
@@ -40,10 +41,10 @@
             android:id="@+id/record_delete"
             android:layout_width="@dimen/live_btn_size"
             android:layout_height="@dimen/live_btn_size"
+            android:layout_alignParentTop="true"
             android:layout_marginLeft="80dp"
             android:background="@drawable/icon_record_delete"
-            android:onClick="onClick"
-            android:layout_alignParentTop="true" />
+            android:onClick="onClick" />
 
         <ImageView
             android:id="@+id/record_download"
@@ -52,7 +53,7 @@
             android:layout_alignParentRight="true"
             android:layout_marginRight="80dp"
             android:background="@drawable/icon_record_download"
-            android:onClick="onClick"/>
+            android:onClick="onClick" />
 
         <ImageView
             android:id="@+id/video_publish"
@@ -60,16 +61,16 @@
             android:layout_height="@dimen/live_btn_size"
             android:layout_centerInParent="true"
             android:background="@drawable/icon_share"
-            android:onClick="onClick"/>
+            android:onClick="onClick" />
 
         <ImageView
             android:id="@+id/record_to_edit"
             android:layout_width="@dimen/live_btn_size"
             android:layout_height="@dimen/live_btn_size"
             android:layout_centerInParent="true"
-            android:visibility="gone"
             android:background="@drawable/selector_preview_to_edit"
-            android:onClick="onClick"/>
+            android:onClick="onClick"
+            android:visibility="gone" />
 
     </RelativeLayout>
 
@@ -87,7 +88,7 @@
         android:paddingRight="25dp"
         android:progress="0"
         android:progressDrawable="@drawable/play_seekbar_progress"
-        android:thumb="@drawable/play_seekbar_icon"/>
+        android:thumb="@drawable/play_seekbar_icon" />
 
     <TextView
         android:id="@+id/progress_time"
@@ -95,16 +96,16 @@
         android:layout_height="wrap_content"
         android:layout_above="@id/seekbar"
         android:layout_alignParentRight="true"
-        android:layout_marginBottom="5dp"
         android:layout_marginRight="25dp"
+        android:layout_marginBottom="5dp"
         android:text="00:00/00:00"
         android:textColor="@color/c8"
-        android:textSize="@dimen/h6"/>
+        android:textSize="@dimen/h6" />
 
     <Button
         android:id="@+id/button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:text="Button" />
+        android:text="Button"
+        android:visibility="gone" />
 </RelativeLayout>

@@ -99,21 +99,6 @@ public class TCVideoJoinChooseActivity extends Activity implements View.OnClickL
         }
     }
 
-    @Override
-    protected void onDestroy() {
-        mHandler.removeCallbacksAndMessages(null);
-        mHandler = null;
-        mHandlerThread.quit();
-        mHandlerThread = null;
-        LinearLayout backLL = (LinearLayout) findViewById(R.id.back_ll);
-        backLL.setOnClickListener(null);
-
-        mBtnOk.setOnClickListener(null);
-
-        mTvRight.setOnClickListener(null);
-        super.onDestroy();
-    }
-
     private void loadVideoList() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
             mHandler.post(new Runnable() {
@@ -132,6 +117,22 @@ public class TCVideoJoinChooseActivity extends Activity implements View.OnClickL
             }
         }
     }
+
+    @Override
+    protected void onDestroy() {
+        mHandler.removeCallbacksAndMessages(null);
+        mHandler = null;
+        mHandlerThread.quit();
+        mHandlerThread = null;
+        LinearLayout backLL = (LinearLayout) findViewById(R.id.back_ll);
+        backLL.setOnClickListener(null);
+
+        mBtnOk.setOnClickListener(null);
+
+        mTvRight.setOnClickListener(null);
+        super.onDestroy();
+    }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

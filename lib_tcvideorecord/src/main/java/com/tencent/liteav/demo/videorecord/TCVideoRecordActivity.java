@@ -77,7 +77,7 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
     private static final String OUTPUT_DIR_NAME = "TXUGC";
     private boolean mRecording = false;
     private boolean mStartPreview = false;
-    private boolean mFront = true;
+    private boolean mFront = true; //是否是前置摄像头
     /**
      * 这玩意是用来录制的
      */
@@ -144,7 +144,7 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
     private ImageView mIvMusicMask;
     private RadioGroup mRadioGroup;
     private int mRecordSpeed = TXRecordCommon.RECORD_SPEED_NORMAL; //录制速度
-    private boolean mNeedEditer;
+    private boolean mNeedEditer = false;
     private boolean mPortrait = true;
     private Button mSnapShot;
     private boolean mEnableStop = false;
@@ -436,67 +436,76 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
     }
 
     private void initAudioListener() {
-        mAudioCtrl.setOnItemClickListener(new RecordDef.OnItemClickListener() {
 
+        //选择音乐的点击事件
+        mAudioCtrl.setOnItemClickListener(new RecordDef.OnItemClickListener() {
             @Override
             public void onBGMSelect(String path) {
                 mBGMPath = path;
                 mBGMDuration = mTXCameraRecord.setBGM(path);
-                // 在选择音乐的时候试听一下
+                //在选择音乐的时候试听一下
                 if (!TextUtils.isEmpty(mBGMPath)) {
-                    // 保证在试听的时候音乐是正常播放的
+                    //保证在试听的时候音乐是正常播放的
                     mTXCameraRecord.setRecordSpeed(TXRecordCommon.RECORD_SPEED_NORMAL);
                     mTXCameraRecord.playBGMFromTime(0, mBGMDuration);
                 }
             }
         });
 
+        //选择完毕返回的点击事件
         mAudioCtrl.setReturnListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // 选择完音乐返回时试听结束
+                //选择完音乐返回时试听结束
                 if (!TextUtils.isEmpty(mBGMPath)) {
                     mTXCameraRecord.stopBGM();
-                    // 在试听结束时，再设置回原来的速度
+                    //在试听结束时，再设置回原来的速度
                     mTXCameraRecord.setRecordSpeed(mRecordSpeed);
                 }
 
                 mAudioCtrl.mMusicSelectView.setVisibility(View.GONE);
                 mAudioCtrl.setVisibility(View.GONE);
                 mIvMusic.setImageResource(R.drawable.ugc_record_music);
+                //展示录制进度条
                 mRecordRelativeLayout.setVisibility(View.VISIBLE);
             }
         });
+
+        //控制设置的回调
         mAudioCtrl.setAudioListener(new TCAudioControl.AudioListener() {
             @Override
             public void onSetReverb(int reverbType) {
+                //混响
                 mTXCameraRecord.setReverb(reverbType);
             }
 
             @Override
             public void onSetVoiceChangerType(int voiceChangeType) {
+                //变声
                 mTXCameraRecord.setVoiceChangerType(voiceChangeType);
             }
 
             @Override
             public void onClickStopBgm() {
+                //停止播放
                 mTXCameraRecord.stopBGM();
             }
 
             @Override
             public void onSetBGMVolume(float volume) {
-                // 范围0-2，默认为1
+                //bgm声音大小:范围0-2，默认为1
                 mTXCameraRecord.setBGMVolume(volume);
             }
 
             @Override
             public void onSetMicVolume(float volume) {
-                // 范围0-2，默认为1
+                //mic音量大小:范围0-2，默认为1
                 mTXCameraRecord.setMicVolume(volume);
             }
 
             @Override
             public int onGetMusicDuration(String musicPath) {
+                //获取音乐文件时长
                 return mTXCameraRecord.getMusicDuration(musicPath);
             }
         });
@@ -523,9 +532,11 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
                 }
             }
         }
+        //暂停录制
         if (mRecording && !mPause) {
             pauseRecord();
         }
+        //暂停背景音乐
         if (mTXCameraRecord != null) {
             mTXCameraRecord.pauseBGM();
         }
@@ -536,10 +547,14 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
         super.onResume();
         TXCLog.i(TAG, "onResume");
         mScreenOrientationListener.enable();
+
+        //处理屏幕比例问题
         setSelectAspect();
 
+        //处理旋转问题
         onActivityRotation();
 
+        //检查权限打开预览效果
         if (hasPermission()) {
             startCameraPreview();
         }
@@ -576,7 +591,8 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
     protected void onActivityRotation() {
         // 自动旋转打开，Activity随手机方向旋转之后，需要改变录制方向
         mMobileRotation = this.getWindowManager().getDefaultDisplay().getRotation();
-        mRenderRotation = TXLiveConstants.RENDER_ROTATION_PORTRAIT; // 渲染方向，因为activity也旋转了，本地渲染相对正方向的角度为0。
+        //渲染方向，因为activity也旋转了，本地渲染相对正方向的角度为0
+        mRenderRotation = TXLiveConstants.RENDER_ROTATION_PORTRAIT;
         mHomeOrientation = TXLiveConstants.VIDEO_ANGLE_HOME_DOWN;
         switch (mMobileRotation) {
             case Surface.ROTATION_0:
@@ -769,6 +785,9 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
         }
     }
 
+    /**
+     * 设置屏幕占比
+     */
     private void setSelectAspect() {
         if (mCurrentAspectRatio == TXRecordCommon.VIDEO_ASPECT_RATIO_9_16) {
             mIvScale.setImageResource(R.drawable.selector_aspect169);
@@ -843,6 +862,9 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
         mAspectSelectShow = !mAspectSelectShow;
     }
 
+    /**
+     * 设置屏幕比例
+     */
     private void selectAnotherAspect(int targetScale) {
         if (mTXCameraRecord != null) {
             scaleDisplay();
@@ -919,29 +941,40 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
         showAnimator.start();
     }
 
+    /**
+     * 根据不同的状态切换 开始录制/继续录制
+     */
     private void switchRecord() {
         long currentClickTime = System.currentTimeMillis();
+        //这里做一个事件重复点击的拦截
         if (currentClickTime - mLastClickTime < 200) {
             return;
         }
         if (mRecording) {
+            //这在录制中
             if (mPause) {
+                //暂停了
                 if (mTXCameraRecord == null) {
                     return;
                 }
                 if (mTXCameraRecord.getPartsManager().getPartsPathList().size() == 0) {
+                    //没有录制的视频就开始录制
                     startRecord();
                 } else {
+                    //否则继续录制
                     resumeRecord();
                 }
             } else {
+                //没有暂停
                 if (!mEnableStop && currentClickTime - mLastClickTime < 3000) {
                     Toast.makeText(TCVideoRecordActivity.this.getApplicationContext(), "别着急，还没有录制数据", Toast.LENGTH_SHORT).show();
                     return;
                 }
+                //直接暂停
                 pauseRecord();
             }
         } else {
+            //没用开始录制，就开始录制
             startRecord();
         }
         mLastClickTime = currentClickTime;
@@ -965,22 +998,27 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
             return;
         }
         if (!TextUtils.isEmpty(mBGMPath)) {
-            if (mBGMPlayingPath == null || !mBGMPath.equals(mBGMPlayingPath)) {
+            if (!mBGMPath.equals(mBGMPlayingPath)) {
+                //新背景音乐就从头播
                 mTXCameraRecord.setBGM(mBGMPath);
                 mTXCameraRecord.playBGMFromTime(0, mBGMDuration);
                 mBGMPlayingPath = mBGMPath;
             } else {
+                //否则就接着播
                 mTXCameraRecord.resumeBGM();
             }
         }
 
+        //刷UI
         mComposeRecordBtn.startRecord();
         mIvDeleteLastPart.setImageResource(R.drawable.ugc_delete_last_part_disable);
         mIvDeleteLastPart.setEnabled(false);
         mIvScaleMask.setVisibility(View.VISIBLE);
 
+        //刷标记
         mPause = false;
         isSelected = false;
+        //请求焦点
         requestAudioFocus();
 
         mRadioGroup.setVisibility(GONE);
@@ -991,17 +1029,22 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
      * 暂停录制
      */
     private void pauseRecord() {
+        //录制按钮复原
         mComposeRecordBtn.pauseRecord();
+        //记录暂停状态
         mPause = true;
+        //删除按钮复原
         mIvDeleteLastPart.setImageResource(R.drawable.selector_delete_last_part);
         mIvDeleteLastPart.setEnabled(true);
 
+        //暂停背景音和录制
         if (mTXCameraRecord != null) {
             if (!TextUtils.isEmpty(mBGMPlayingPath)) {
                 mTXCameraRecord.pauseBGM();
             }
             mTXCameraRecord.pauseRecord();
         }
+
         abandonAudioFocus();
 
         mRadioGroup.setVisibility(View.VISIBLE);
@@ -1051,9 +1094,7 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
         String customCoverPath = customVideoPath.replace(".mp4", ".jpg"); //录制视频封面存放位置
         String customPartFolder = getCustomVideoPartFolder(); //存放文件夹
 
-        /**
-         * 这里是真正的开始录制
-         */
+        //开始录制
         int result = mTXCameraRecord.startRecord(customVideoPath, customPartFolder, customCoverPath);
         if (result != TXRecordCommon.START_RECORD_OK) {
             if (result == TXRecordCommon.START_RECORD_ERR_NOT_INIT) {
@@ -1072,11 +1113,13 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
             return;
         }
 
+        //已经开始录制，刷新UI
         mComposeRecordBtn.startRecord();
         mIvScaleMask.setVisibility(View.VISIBLE);
         mIvDeleteLastPart.setImageResource(R.drawable.ugc_delete_last_part_disable);
         mIvDeleteLastPart.setEnabled(false);
 
+        //播放背景音乐
         if (!TextUtils.isEmpty(mBGMPath)) {
             mBGMDuration = mTXCameraRecord.setBGM(mBGMPath);
             mTXCameraRecord.playBGMFromTime(0, mBGMDuration);
@@ -1086,6 +1129,7 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
 
         mRecording = true;
         mPause = false;
+        //请求音频焦点
         requestAudioFocus();
 
         mIvMusicMask.setVisibility(View.VISIBLE);
@@ -1099,6 +1143,9 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
         return outputDir;
     }
 
+    /**
+     * 获取视频存放位置
+     */
     private String getCustomVideoOutputPath() {
         long currentTime = System.currentTimeMillis();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmssSSS");
@@ -1112,6 +1159,9 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
         return tempOutputPath;
     }
 
+    /**
+     * 预览
+     */
     private void startPreview() {
         if (mTXRecordResult != null && (mTXRecordResult.retCode == TXRecordCommon.RECORD_RESULT_OK
                 || mTXRecordResult.retCode == TXRecordCommon.RECORD_RESULT_OK_REACHED_MAXDURATION
@@ -1120,11 +1170,11 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
             Intent intent = new Intent();
             intent.setAction("com.tencent.liteav.demo.videopreview");
             intent.putExtra(TCConstants.VIDEO_RECORD_TYPE, TCConstants.VIDEO_RECORD_TYPE_UGC_RECORD);
-            intent.putExtra(TCConstants.VIDEO_RECORD_RESULT, mTXRecordResult.retCode);
-            intent.putExtra(TCConstants.VIDEO_RECORD_DESCMSG, mTXRecordResult.descMsg);
-            intent.putExtra(TCConstants.VIDEO_RECORD_VIDEPATH, mTXRecordResult.videoPath);
-            intent.putExtra(TCConstants.VIDEO_RECORD_COVERPATH, mTXRecordResult.coverPath);
-            intent.putExtra(TCConstants.VIDEO_RECORD_DURATION, mDuration);
+            intent.putExtra(TCConstants.VIDEO_RECORD_RESULT, mTXRecordResult.retCode); //错误码
+            intent.putExtra(TCConstants.VIDEO_RECORD_DESCMSG, mTXRecordResult.descMsg); //错误信息
+            intent.putExtra(TCConstants.VIDEO_RECORD_VIDEPATH, mTXRecordResult.videoPath); //录制视频保存路径
+            intent.putExtra(TCConstants.VIDEO_RECORD_COVERPATH, mTXRecordResult.coverPath); //录制视频的封面保存路径
+            intent.putExtra(TCConstants.VIDEO_RECORD_DURATION, mDuration); //录制时长
             if (mRecommendQuality == TXRecordCommon.VIDEO_QUALITY_LOW) {
                 intent.putExtra(TCConstants.VIDEO_RECORD_RESOLUTION, TXRecordCommon.VIDEO_RESOLUTION_360_640);
             } else if (mRecommendQuality == TXRecordCommon.VIDEO_QUALITY_MEDIUM) {
@@ -1141,6 +1191,9 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
         }
     }
 
+    /**
+     * 编辑
+     */
     private void startEditVideo() {
         Intent intent = new Intent();
         intent.setAction("com.tencent.liteav.demo.videopreprocess");
@@ -1179,18 +1232,22 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
     public void onRecordEvent(int event, Bundle param) {
         TXCLog.d(TAG, "onRecordEvent event id = " + event);
         if (event == TXRecordCommon.EVT_ID_PAUSE) {
+            //录制暂停
             mRecordProgressView.clipComplete();
         } else if (event == TXRecordCommon.EVT_CAMERA_CANNOT_USE) {
+            //获取摄像头失败
             Toast.makeText(this, "摄像头打开失败，请检查权限", Toast.LENGTH_SHORT).show();
         } else if (event == TXRecordCommon.EVT_MIC_CANNOT_USE) {
+            //打开麦克风失败
             Toast.makeText(this, "麦克风打开失败，请检查权限", Toast.LENGTH_SHORT).show();
         } else if (event == TXRecordCommon.EVT_ID_RESUME) {
-
+            //复原了
         }
     }
 
     @Override
     public void onRecordProgress(long milliSecond) {
+        //录制进度回调
         TXCLog.i(TAG, "onRecordProgress, mRecordProgressView = " + mRecordProgressView);
         if (mRecordProgressView == null) {
             return;
@@ -1211,12 +1268,13 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
 
     @Override
     public void onRecordComplete(TXRecordCommon.TXRecordResult result) {
+        //录制完成回调
         mCustomProgressDialog.dismiss();
-
+        //这里保存录制结果
         mTXRecordResult = result;
-
         TXCLog.i(TAG, "onRecordComplete, result retCode = " + result.retCode + ", descMsg = " + result.descMsg + ", videoPath = " + result.videoPath + ", coverPath = " + result.coverPath);
         if (mTXRecordResult.retCode < 0) {
+            //录制失败
             mRecording = false;
             if (mTXCameraRecord != null) {
                 int timeSecond = mTXCameraRecord.getPartsManager().getDuration() / 1000;
@@ -1224,13 +1282,16 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
             }
             Toast.makeText(TCVideoRecordActivity.this.getApplicationContext(), "录制失败，原因：" + mTXRecordResult.descMsg, Toast.LENGTH_SHORT).show();
         } else {
+            //录制正常结束
             mDuration = mTXCameraRecord.getPartsManager().getDuration();
             if (mTXCameraRecord != null) {
                 mTXCameraRecord.getPartsManager().deleteAllParts();
             }
             if (mNeedEditer) {
+                //视频编辑页
                 startEditVideo();
             } else {
+                //预览页
                 startPreview();
             }
         }
@@ -1257,6 +1318,9 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
         }
     }
 
+    /**
+     * 请求音频焦点
+     */
     private void requestAudioFocus() {
         if (null == mAudioManager) {
             mAudioManager = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
@@ -1271,8 +1335,10 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
                         TXCLog.i(TAG, "requestAudioFocus, onAudioFocusChange focusChange = " + focusChange);
 
                         if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
+                            //丢失音频焦点，持续时间未知
                             pauseRecord();
                         } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
+                            //音频焦点暂时丢失
                             pauseRecord();
                         } else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
 
@@ -1292,6 +1358,9 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
         }
     }
 
+    /**
+     * 舍弃音频焦点
+     */
     private void abandonAudioFocus() {
         try {
             if (null != mAudioManager && null != mOnAudioFocusListener) {
@@ -1306,6 +1375,7 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
     @Override
     public void onBeautyParamsChange(BeautySettingPannel.BeautyParams params, int key) {
         switch (key) {
+            //美颜参数设置
             case BeautySettingPannel.BEAUTYPARAM_BEAUTY:
                 mBeautyParams.mBeautyLevel = params.mBeautyLevel;
                 mBeautyParams.mBeautyStyle = params.mBeautyStyle;
@@ -1623,13 +1693,12 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
     public void onLongPress(MotionEvent motionEvent) {
 
     }
-
-
     // OnGestureListener回调end
 
     // OnScaleGestureListener回调start
     @Override
     public boolean onScale(ScaleGestureDetector scaleGestureDetector) {
+        TXCLog.i(TAG, "onScale");
         int maxZoom = mTXCameraRecord.getMaxZoom();
         if (maxZoom == 0) {
             TXCLog.i(TAG, "camera not support zoom");
@@ -1701,6 +1770,4 @@ public class TCVideoRecordActivity extends Activity implements View.OnClickListe
     public void onBackPressed() {
         back();
     }
-
-
 }
